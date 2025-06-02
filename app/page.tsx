@@ -528,7 +528,7 @@ export default function Home() {
               } ${dayCompleted ? 'bg-green-100' : ''}`}
             >
               <div className="text-xl font-bold">{day}</div>
-              <div className="text-xs text-gray-700">
+              <div className="text-xs text-gray-800 font-medium">
                 {daysContent[day].subtitle}
               </div>
               {dayCompleted && <div className="text-xs">✅</div>}
@@ -551,7 +551,7 @@ export default function Home() {
               <h3 className="text-lg font-bold text-green-700">
                 {exercise.time}: {exercise.title}
               </h3>
-              <span className="text-sm bg-gray-100 px-3 py-1 rounded-full">
+              <span className="text-sm bg-gray-100 px-3 py-1 rounded-full text-gray-900 font-medium">
                 {exercise.duration}
               </span>
             </div>
@@ -559,7 +559,7 @@ export default function Home() {
             {/* Tools */}
             {exercise.tools && (
               <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-4 mb-4">
-                <h4 className="text-sm font-semibold text-blue-700 mb-2">🛠️ Tools for this exercise:</h4>
+                <h4 className="text-sm font-semibold text-blue-800 mb-2">🛠️ Tools for this exercise:</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {exercise.tools.map((tool, toolIdx) => (
                     <button
@@ -570,7 +570,7 @@ export default function Home() {
                       <span className={`w-8 h-8 ${tool.color} text-white rounded flex items-center justify-center font-bold text-sm`}>
                         {tool.icon}
                       </span>
-                      <span className="text-sm">{tool.name}</span>
+                      <span className="text-sm text-gray-900 font-medium">{tool.name}</span>
                     </button>
                   ))}
                 </div>
@@ -584,7 +584,7 @@ export default function Home() {
                   <span className="absolute left-3 top-4 bg-green-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">
                     {step.number}
                   </span>
-                  <strong className="block mb-1">{step.title}</strong>
+                  <strong className="block mb-1 text-gray-900">{step.title}</strong>
                   <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans">{step.content}</pre>
                 </div>
               ))}
