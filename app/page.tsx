@@ -528,7 +528,7 @@ export default function Home() {
               } ${dayCompleted ? 'bg-green-100' : ''}`}
             >
               <div className="text-xl font-bold">{day}</div>
-              <div className="text-xs text-gray-600">
+              <div className="text-xs text-gray-700">
                 {daysContent[day].subtitle}
               </div>
               {dayCompleted && <div className="text-xs">✅</div>}
@@ -585,7 +585,7 @@ export default function Home() {
                     {step.number}
                   </span>
                   <strong className="block mb-1">{step.title}</strong>
-                  <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans">{step.content}</pre>
+                  <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans">{step.content}</pre>
                 </div>
               ))}
             </div>
@@ -596,7 +596,7 @@ export default function Home() {
                 {exercise.phrases.map((phrase, phraseIdx) => (
                   <div key={phraseIdx} className="flex justify-between items-center p-2 hover:bg-white rounded transition-all">
                     <span className="font-semibold text-green-700">{phrase.pt}</span>
-                    <span className="text-sm text-gray-600">{phrase.en}</span>
+                    <span className="text-sm text-gray-700">{phrase.en}</span>
                   </div>
                 ))}
               </div>
@@ -616,7 +616,7 @@ export default function Home() {
         <div className="bg-white rounded-lg shadow-md p-6">
           <h3 className="text-lg font-bold text-blue-700 mb-4 flex items-center gap-2">
             📋 Daily Missions
-            <span className="text-sm font-normal text-gray-600">
+            <span className="text-sm font-normal text-gray-700">
               (+10 points each)
             </span>
           </h3>
@@ -639,7 +639,7 @@ export default function Home() {
                     </span>
                   )}
                 </div>
-                <span className={`flex-1 ${dayMissions[idx] ? 'line-through text-gray-400' : ''}`}>
+                <span className={`flex-1 ${dayMissions[idx] ? 'line-through text-gray-500' : 'text-gray-900'}`}>
                   {mission}
                 </span>
               </label>
