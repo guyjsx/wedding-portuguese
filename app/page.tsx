@@ -424,10 +424,14 @@ export default function Home() {
       // Try Supabase sync if user is authenticated
       const { data: { user: currentUser } } = await supabase.auth.getUser()
       if (currentUser) {
+        // Get all records and find the one with the most progress
         const { data, error } = await supabase
           .from('progress')
           .select('*')
           .eq('user_id', currentUser.id)
+          .order('points', { ascending: false })
+          .order('updated_at', { ascending: false })
+          .limit(1)
           .maybeSingle()
         
         if (data && !error) {
@@ -436,14 +440,8 @@ export default function Home() {
           // Update localStorage with cloud data
           const progressData: ProgressData = { missions: data.missions as Missions || {}, points: data.points || 0 }
           localStorage.setItem('wedding-portuguese-progress', JSON.stringify(progressData))
-        } else if (error && error.code === 'PGRST116') {
-          // No progress found, create initial record
-          await supabase.from('progress').insert({
-            user_id: currentUser.id,
-            missions: missions,
-            points: points
-          })
         }
+        // Don't create new records on load - only when saving
       }
     } catch (error) {
       console.error('Error loading progress:', error)
