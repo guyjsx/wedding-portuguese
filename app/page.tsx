@@ -462,6 +462,8 @@ export default function Home() {
           user_id: currentUser.id,
           missions: newMissions,
           points: newPoints
+        }, {
+          onConflict: 'user_id'
         })
       } catch (error) {
         console.error('Error saving to Supabase:', error)
