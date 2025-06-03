@@ -1,13 +1,13 @@
 // app/page.tsx
 'use client'
 import { useState, useEffect } from 'react'
-// import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js'
+import Auth from './components/Auth'
 
-// Initialize Supabase (commented out until we implement sync)
-// TODO: Implement Supabase sync for cross-device progress tracking
-// const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-// const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-// const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Initialize Supabase
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Type definitions
 interface Tool {
@@ -71,9 +71,9 @@ const daysContent: Record<number, DayContent> = {
         title: "Master the R Sound",
         duration: "15 min",
         tools: [
-          { name: "Forvo", url: "https://forvo.com/languages/pt/", icon: "F", color: "bg-orange-500" },
-          { name: "Speechling", url: "https://speechling.com", icon: "S", color: "bg-teal-500" },
-          { name: "Google Translate", url: "https://translate.google.com", icon: "G", color: "bg-blue-500" },
+          { name: "Forvo", url: "https://forvo.com/word/roberto/#pt", icon: "F", color: "bg-orange-500" },
+          { name: "Speechling", url: "https://speechling.com/practice/portuguese", icon: "S", color: "bg-teal-500" },
+          { name: "Google Translate", url: "https://translate.google.com/?sl=en&tl=pt&text=Hello%20my%20name%20is&op=translate", icon: "G", color: "bg-blue-500" },
           { name: "Voice Recorder", url: "#", icon: "🎙️", color: "bg-pink-500" }
         ],
         steps: [
@@ -95,8 +95,8 @@ const daysContent: Record<number, DayContent> = {
         title: "Video Practice",
         duration: "15 min",
         tools: [
-          { name: "YouTube", url: "https://youtube.com/results?search_query=portuguese+introduction", icon: "▶️", color: "bg-red-500" },
-          { name: "TikTok", url: "https://tiktok.com", icon: "T", color: "bg-black" }
+          { name: "YouTube", url: "https://youtube.com/results?search_query=como+se+apresentar+em+português", icon: "▶️", color: "bg-red-500" },
+          { name: "TikTok", url: "https://www.tiktok.com/search?q=português%20para%20iniciantes", icon: "T", color: "bg-black" }
         ],
         steps: [
           { number: 1, title: "YouTube Shadow Speaking (10 min)", content: "1. Search: \"Como se apresentar em português\"\n2. Watch: \"Speaking Brazilian - Introductions\"\n3. Settings: 0.75x speed, Portuguese captions\n4. Shadow speak each introduction 3x" },
@@ -139,8 +139,8 @@ const daysContent: Record<number, DayContent> = {
         title: "Emotion Recognition",
         duration: "15 min",
         tools: [
-          { name: "Netflix", url: "https://netflix.com", icon: "N", color: "bg-red-600" },
-          { name: "Speechling", url: "https://speechling.com", icon: "S", color: "bg-teal-500" }
+          { name: "Netflix", url: "https://www.netflix.com/search?q=vai%20que%20cola", icon: "N", color: "bg-red-600" },
+          { name: "Speechling", url: "https://speechling.com/practice/portuguese", icon: "S", color: "bg-teal-500" }
         ],
         steps: [
           { number: 1, title: "Netflix Emotion Study (7 min)", content: "1. Open \"Vai Que Cola\" or \"3%\"\n2. Watch 5 minutes with Portuguese audio + subtitles\n3. Screenshot every emotion expression\n4. Create phone wallpaper with expressions" },
@@ -160,8 +160,8 @@ const daysContent: Record<number, DayContent> = {
         title: "Music & Rhythm",
         duration: "15 min",
         tools: [
-          { name: "Spotify", url: "https://spotify.com", icon: "S", color: "bg-green-500" },
-          { name: "Letras.mus.br", url: "https://letras.mus.br", icon: "L", color: "bg-orange-500" }
+          { name: "Spotify", url: "https://open.spotify.com/search/emoções%20roberto%20carlos", icon: "S", color: "bg-green-500" },
+          { name: "Letras.mus.br", url: "https://www.letras.mus.br/roberto-carlos/46648/", icon: "L", color: "bg-orange-500" }
         ],
         steps: [
           { number: 1, title: "Learn Through Music (10 min)", content: "1. Play \"Emoções\" - Roberto Carlos\n2. Open lyrics on Letras.mus.br\n3. Highlight all nasal sounds (ão, ões)\n4. Sing along focusing on nasals\n5. Record yourself singing chorus" },
@@ -204,7 +204,7 @@ const daysContent: Record<number, DayContent> = {
         title: "AI Clarification Practice",
         duration: "15 min",
         tools: [
-          { name: "ChatGPT Voice", url: "https://chat.openai.com", icon: "C", color: "bg-teal-600" },
+          { name: "ChatGPT Voice", url: "https://chat.openai.com/g/g-TgylRklAe-voice", icon: "C", color: "bg-teal-600" },
           { name: "Google Assistant", url: "#", icon: "G", color: "bg-blue-500" }
         ],
         steps: [
@@ -391,10 +391,25 @@ export default function Home() {
   const [missions, setMissions] = useState<Missions>({})
   const [loading, setLoading] = useState<boolean>(true)
   const [points, setPoints] = useState<number>(0)
+  const [showAuth, setShowAuth] = useState<boolean>(false)
+  const [user, setUser] = useState<{id: string, email?: string} | null>(null)
 
   useEffect(() => {
-    loadProgress()
+    checkUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    setUser(user)
+    loadProgress()
+  }
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+    // Keep local progress even after sign out
+  }
 
   const loadProgress = async (): Promise<void> => {
     try {
@@ -406,19 +421,30 @@ export default function Home() {
         setPoints(data.points || 0)
       }
       
-      // TODO: Add Supabase sync here later
-      // const { data: { user } } = await supabase.auth.getUser()
-      // if (user) {
-      //   const { data } = await supabase
-      //     .from('progress')
-      //     .select('*')
-      //     .eq('user_id', user.id)
-      //     .single()
-      //   if (data) {
-      //     setMissions(data.missions)
-      //     setPoints(data.points)
-      //   }
-      // }
+      // Try Supabase sync if user is authenticated
+      const { data: { user: currentUser } } = await supabase.auth.getUser()
+      if (currentUser) {
+        const { data, error } = await supabase
+          .from('progress')
+          .select('*')
+          .eq('user_id', currentUser.id)
+          .single()
+        
+        if (data && !error) {
+          setMissions(data.missions as Missions || {})
+          setPoints(data.points || 0)
+          // Update localStorage with cloud data
+          const progressData: ProgressData = { missions: data.missions as Missions || {}, points: data.points || 0 }
+          localStorage.setItem('wedding-portuguese-progress', JSON.stringify(progressData))
+        } else if (error && error.code === 'PGRST116') {
+          // No progress found, create initial record
+          await supabase.from('progress').insert({
+            user_id: currentUser.id,
+            missions: missions,
+            points: points
+          })
+        }
+      }
     } catch (error) {
       console.error('Error loading progress:', error)
     } finally {
@@ -426,20 +452,23 @@ export default function Home() {
     }
   }
 
-  const saveProgress = (newMissions: Missions, newPoints: number): void => {
+  const saveProgress = async (newMissions: Missions, newPoints: number): Promise<void> => {
     const data: ProgressData = { missions: newMissions, points: newPoints }
     localStorage.setItem('wedding-portuguese-progress', JSON.stringify(data))
     
-    // TODO: Sync with Supabase here
-    // const { data: { user } } = await supabase.auth.getUser()
-    // if (user) {
-    //   await supabase.from('progress').upsert({
-    //     user_id: user.id,
-    //     missions: newMissions,
-    //     points: newPoints,
-    //     updated_at: new Date().toISOString()
-    //   })
-    // }
+    // Sync with Supabase if user is authenticated
+    const { data: { user: currentUser } } = await supabase.auth.getUser()
+    if (currentUser) {
+      try {
+        await supabase.from('progress').upsert({
+          user_id: currentUser.id,
+          missions: newMissions,
+          points: newPoints
+        })
+      } catch (error) {
+        console.error('Error saving to Supabase:', error)
+      }
+    }
   }
 
   const toggleMission = (day: number, missionIndex: number): void => {
@@ -491,6 +520,13 @@ export default function Home() {
     )
   }
 
+  if (showAuth && !user) {
+    return <Auth onAuthChange={() => {
+      setShowAuth(false)
+      checkUser()
+    }} />
+  }
+
   const dayContent = daysContent[currentDay] || daysContent[1]
   const dayMissions = missions[`day${currentDay}`] || {}
 
@@ -498,8 +534,19 @@ export default function Home() {
     <div className="max-w-lg mx-auto min-h-screen bg-white shadow-xl">
       {/* Header */}
       <header className="bg-gradient-to-r from-green-600 to-blue-700 text-white p-6 sticky top-0 z-50 shadow-lg">
-        <h1 className="text-2xl font-bold text-center">🇧🇷 Wedding Portuguese</h1>
-        <p className="text-center text-sm opacity-90 mt-1">Week 1: Foundation</p>
+        <div className="flex justify-between items-start">
+          <button
+            onClick={() => user ? handleSignOut() : setShowAuth(true)}
+            className="text-xs bg-white/20 px-3 py-1 rounded-full hover:bg-white/30 transition-all"
+          >
+            {user ? 'Sign out' : 'Sign in'}
+          </button>
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold text-center">🇧🇷 Wedding Portuguese</h1>
+            <p className="text-center text-sm opacity-90 mt-1">Week 1: Foundation</p>
+          </div>
+          <div className="w-16">{/* Spacer for balance */}</div>
+        </div>
         <div className="mt-3 bg-white/20 rounded-full h-2 overflow-hidden">
           <div 
             className="h-full bg-yellow-400 transition-all duration-500"
