@@ -428,7 +428,7 @@ export default function Home() {
           .from('progress')
           .select('*')
           .eq('user_id', currentUser.id)
-          .single()
+          .maybeSingle()
         
         if (data && !error) {
           setMissions(data.missions as Missions || {})
